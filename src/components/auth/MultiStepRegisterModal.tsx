@@ -98,6 +98,12 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
   };
 
   const handleFinalSubmit = () => {
+    let finalPhone = phoneNumber.trim();
+    const digitsOnly = finalPhone.replace(/[^\d]/g, '');
+    if (digitsOnly.length === 10) {
+      finalPhone = `+91 ${digitsOnly}`;
+    }
+
     registerUser({
       name: fullName,
       username,
@@ -108,7 +114,7 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
       avatar: selectedAvatar,
       bio: bio || (selectedRole === 'admin' ? 'Project Admin & System Lead' : 'Team Member crafting fast sprint features.'),
       skills: selectedSkills.length > 0 ? selectedSkills : ['React', 'TypeScript'],
-      phoneNumber: phoneNumber.trim() || '+91 9876543210'
+      phoneNumber: finalPhone || '+91 9876543210'
     });
 
     onClose();

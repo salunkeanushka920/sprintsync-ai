@@ -116,7 +116,10 @@ export const WhatsAppSimulator: React.FC = () => {
     );
 
     // 2. DIRECT REDIRECT TO NATIVE WHATSAPP APP / WHATSAPP WEB
-    const cleanPhone = targetPhone.replace(/[^0-9]/g, '');
+    let cleanPhone = targetPhone.replace(/[^0-9]/g, '');
+    if (cleanPhone.length === 10) {
+      cleanPhone = `91${cleanPhone}`;
+    }
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(finalMsgBody)}`;
     window.open(whatsappUrl, '_blank');
 
