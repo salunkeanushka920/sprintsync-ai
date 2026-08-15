@@ -15,8 +15,6 @@ import type {
   AttendanceRecord
 } from '../types';
 import {
-  INITIAL_USERS,
-  DEFAULT_FALLBACK_USER,
   INITIAL_COMMITS,
   INITIAL_PRS
 } from '../data/initialData';
@@ -128,17 +126,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [users, setUsers] = useState<User[]>(() => {
     const loaded = dbService.getUsers();
     const list = Array.isArray(loaded) ? loaded : [];
-    const filtered = list.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555'));
-    return filtered.length > 0 ? filtered : INITIAL_USERS;
+    return list.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && u.id !== 'usr_default' && !u.phoneNumber?.startsWith('+1415555'));
   });
-  const [activeUserId, setActiveUserId] = useState<string>(() => dbService.getActiveUserId() || 'usr_default');
+  const [activeUserId, setActiveUserId] = useState<string>(() => dbService.getActiveUserId() || '');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dbService.getIsAuthenticated());
 
-  const currentUser = (users && users.length > 0)
+  const currentUser: User = (users && users.length > 0)
     ? (users.find(u => u.id === activeUserId) || users[0])
-    : DEFAULT_FALLBACK_USER;
-  const [currentRole, setCurrentRole] = useState<UserRole>(currentUser?.role || 'user');
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(currentUser?.role === 'admin');
+    : {
+        id: 'usr_guest',
+        name: 'Guest Developer',
+        username: 'guest_dev',
+        email: 'guest@sprintsync.ai',
+        passwordHash: 'guest123',
+        role: 'user' as UserRole,
+        department: 'Frontend',
+        avatar: 'https://ui-avatars.com/api/?name=Guest+Developer&background=1e293b&color=cbd5e1&size=150',
+        bio: 'SprintSync Team Contributor',
+        skills: ['React', 'TypeScript'],
+        phoneNumber: '+91 9876543210'
+      };
+  const [currentRole, setCurrentRole] = useState<UserRole>(currentUser.role || 'user');
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(currentUser.role === 'admin');
 
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
@@ -259,7 +268,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     client.from('users').select('*').then(({ data, error }) => {
       if (data && data.length > 0 && !error) {
         const cleanUsers = (data as User[]).filter(
-          u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555')
+          u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && u.id !== 'usr_default' && !u.phoneNumber?.startsWith('+1415555')
         );
         setUsers(cleanUsers);
       }
