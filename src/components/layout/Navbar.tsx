@@ -10,6 +10,7 @@ import {
   CheckCheck,
   Plus,
   Settings,
+  User,
   LogOut,
   LogIn,
   UserPlus,
@@ -145,15 +146,15 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Bar Trigger */}
-        <div className="flex-1 max-w-md hidden md:block">
+        {/* Search Bar Trigger - Responsive on Mobile & Desktop */}
+        <div className="flex-1 max-w-md mx-2">
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-indigo-500/40 text-slate-400 text-sm transition-all shadow-inner group"
+            className="w-full flex items-center justify-between px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-indigo-500/40 text-slate-400 text-xs sm:text-sm transition-all shadow-inner group"
           >
-            <div className="flex items-center gap-2.5">
-              <Search className="w-4 h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
-              <span>Search my tasks, deadlines, or AI query...</span>
+            <div className="flex items-center gap-2">
+              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+              <span className="truncate">Search tasks, AI or commands...</span>
             </div>
             <kbd className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700 rounded-md">
               Ctrl K
@@ -311,12 +312,23 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => {
+                      setActiveTab('settings');
+                      setIsUserMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 hover:text-white transition-all"
+                  >
+                    <Settings className="w-4 h-4 text-purple-400" />
+                    <span>Sprint & Cloud Settings</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
                       setActiveTab('profile');
                       setIsUserMenuOpen(false);
                     }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 hover:text-white transition-all"
                   >
-                    <Settings className="w-4 h-4 text-indigo-400" />
+                    <User className="w-4 h-4 text-indigo-400" />
                     <span>Profile Settings</span>
                   </button>
 
