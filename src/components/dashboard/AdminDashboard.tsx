@@ -15,7 +15,8 @@ import {
   Plus,
   Send,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -27,7 +28,8 @@ export const AdminDashboard: React.FC = () => {
     addAnnouncement,
     setActiveTab,
     setIsAIAssistantOpen,
-    sendWhatsAppNotification
+    sendWhatsAppNotification,
+    setIsWhatsAppModalOpen
   } = useApp();
 
   const [announcementText, setAnnouncementText] = useState('');
@@ -112,10 +114,13 @@ export const AdminDashboard: React.FC = () => {
       );
     });
 
+    // Directly open WhatsApp App for the admin with announcement text pre-filled
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`📢 *SprintSync Announcement*\n\n*${announcementTitle}*\n${announcementText}`)}`;
+    window.open(whatsappUrl, '_blank');
+
     setAnnouncementTitle('');
     setAnnouncementText('');
     setShowAnnouncementSuccess(true);
-    setTimeout(() => setShowAnnouncementSuccess(false), 3000);
   };
 
   return (
@@ -402,8 +407,25 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {showAnnouncementSuccess && (
-          <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500 text-emerald-200 text-xs font-semibold">
-            ✓ Announcement dispatched instantly to all {users.length} team members' WhatsApp numbers!
+          <div className="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+            <span>✓ Announcement logged in workspace & dispatched to WhatsApp!</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsWhatsAppModalOpen(true)}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold text-[11px] flex items-center gap-1 shadow transition-all"
+              >
+                <Send className="w-3 h-3" /> View in WhatsApp Center
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAnnouncementSuccess(false)}
+                className="p-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-all"
+                title="Close notification"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         )}
 

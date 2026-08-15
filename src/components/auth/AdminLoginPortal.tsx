@@ -47,7 +47,7 @@ export const AdminLoginPortal: React.FC<AdminLoginPortalProps> = ({ isOpen, onCl
               </div>
               <div>
                 <h3 className="text-base font-extrabold text-slate-100">Secure Admin Operations</h3>
-                <p className="text-xs text-slate-400">Shiv's Restricted Administrator Portal</p>
+                <p className="text-xs text-slate-400">Restricted Administrator Control Portal</p>
               </div>
             </div>
             <button onClick={onClose} className="text-slate-400 hover:text-white p-1">

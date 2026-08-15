@@ -71,24 +71,126 @@ body {
   background: #334155;
 }
 
-/* Shimmer animation */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+/* ==========================================================================
+   Full Light Mode Theme Engine (100% High Contrast & High Visibility)
+   ========================================================================== */
+.light-theme {
+  color-scheme: light !important;
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
 }
 
-.animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 2.5s infinite;
+.light-theme body {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
 }
 
-/* Pulse Glow */
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
+/* Glass Panels & Containers */
+.light-theme .glass-panel {
+  background: #FFFFFF !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #CBD5E1 !important;
+  box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.2) !important;
+  color: #0F172A !important;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 4s infinite ease-in-out;
+.light-theme .glass-card {
+  background: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+/* All Dark Background Overrides */
+.light-theme [class*="bg-slate-950"],
+.light-theme [class*="bg-slate-900"],
+.light-theme [class*="bg-slate-850"],
+.light-theme [class*="bg-slate-800"],
+.light-theme [class*="bg-\[\#0B1020\]"],
+.light-theme [class*="bg-\[\#0b1020\]"] {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+
+/* Gradients in Light Mode */
+.light-theme [class*="from-indigo-950"],
+.light-theme [class*="from-purple-950"],
+.light-theme [class*="from-slate-950"],
+.light-theme [class*="from-slate-900"] {
+  --tw-gradient-from: #EFF6FF !important;
+  --tw-gradient-to: #F1F5F9 !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+/* Inputs, Textareas, Selects */
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: #64748B !important;
+}
+
+/* All Text Colors in Light Mode */
+.light-theme .text-slate-100,
+.light-theme .text-slate-200,
+.light-theme .text-white {
+  color: #0F172A !important;
+}
+
+.light-theme .text-slate-300,
+.light-theme .text-slate-400,
+.light-theme .text-slate-500 {
+  color: #334155 !important;
+}
+
+/* Keep Brand Titles & Gradient Clip Text Visible */
+.light-theme .bg-clip-text {
+  -webkit-text-fill-color: initial !important;
+  color: #4F46E5 !important;
+  background: none !important;
+}
+
+/* Borders */
+.light-theme [class*="border-slate-"] {
+  border-color: #CBD5E1 !important;
+}
+
+/* Buttons in Light Mode */
+.light-theme button:not([class*="bg-indigo-600"]):not([class*="bg-purple-600"]):not([class*="bg-emerald-600"]):not([class*="bg-rose-600"]):not([class*="from-indigo-600"]) {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+.light-theme button:hover:not([class*="bg-indigo-600"]):not([class*="bg-purple-600"]):not([class*="bg-emerald-600"]):not([class*="bg-rose-600"]):not([class*="from-indigo-600"]) {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+
+/* Badges & Pills */
+.light-theme span[class*="bg-slate-"] {
+  background-color: #E2E8F0 !important;
+  color: #1E293B !important;
+}
+
+/* Icons */
+.light-theme svg.text-slate-400,
+.light-theme svg.text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Scrollbars in Light Mode */
+.light-theme ::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
 }

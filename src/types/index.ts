@@ -60,6 +60,7 @@ export interface Task {
   comments?: TaskComment[];
   blockerReason?: string;
   progressNotes?: string;
+  sprintId?: string;
 }
 
 export interface Notification {
@@ -124,6 +125,7 @@ export interface Sprint {
   startDate: string;
   endDate: string;
   status: 'active' | 'planning' | 'completed';
+  memberIds?: string[];
 }
 
 export interface TeamAnnouncement {

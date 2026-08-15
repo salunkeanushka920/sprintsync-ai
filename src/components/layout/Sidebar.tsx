@@ -13,7 +13,8 @@ import {
   Sparkles,
   Users,
   BarChart3,
-  Flame
+  Flame,
+  Layers
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,7 +23,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
-  const { tasks, whatsAppMessages, currentRole, currentUser, setIsAIAssistantOpen } = useApp();
+  const { tasks, sprints, currentRole, currentUser, setIsAIAssistantOpen } = useApp();
 
   const myTasks = tasks.filter(t => t.assignedToIds.includes(currentUser.id));
   const overdueCount = myTasks.filter(
@@ -32,12 +33,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   const userNavItems = [
     { id: 'dashboard', label: 'My Workspace', icon: LayoutDashboard, badge: null },
     { id: 'kanban', label: 'My Tasks', icon: Kanban, badge: myTasks.length },
+    { id: 'sprints', label: 'Sprint Workspaces', icon: Layers, badge: sprints.length },
     { id: 'attendance', label: 'Work Attendance', icon: Clock, badge: 'Punch' },
     { id: 'timeline', label: 'My Deadlines', icon: Calendar, badge: null },
     { id: 'standup', label: 'Daily Standup', icon: Activity, badge: null },
     { id: 'profile', label: 'Profile Settings', icon: User, badge: null },
     { id: 'github', label: 'GitHub Activity', icon: GitBranch, badge: 'Live' },
-    { id: 'whatsapp', label: 'WhatsApp Alerts', icon: MessageSquare, badge: whatsAppMessages.length }
+    { id: 'whatsapp', label: 'WhatsApp Alerts', icon: MessageSquare, badge: null }
   ];
 
   const adminNavItems = [
@@ -57,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           <img src={currentUser.avatar} className="w-9 h-9 rounded-xl object-cover ring-2 ring-indigo-500/40" />
           <div className="overflow-hidden">
             <p className="text-[10px] uppercase font-bold tracking-wider text-indigo-400">
-              {currentRole === 'admin' ? 'Shiv Admin Portal' : 'Private Workspace'}
+              {currentRole === 'admin' ? 'Admin Portal' : 'Private Workspace'}
             </p>
             <p className="text-xs font-bold text-slate-100 truncate">{currentUser.name}</p>
           </div>

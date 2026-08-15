@@ -18,8 +18,8 @@ export const UserLoginModal: React.FC<UserLoginModalProps> = ({
 }) => {
   const { loginUser } = useApp();
 
-  const [identifier, setIdentifier] = useState('anushka@sprintsync.ai');
-  const [password, setPassword] = useState('password123');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen) return null;
@@ -71,7 +71,7 @@ export const UserLoginModal: React.FC<UserLoginModalProps> = ({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4 text-xs">
             <div>
               <label className="font-bold text-slate-300 block mb-1">Email or Username</label>
               <div className="relative">
@@ -79,7 +79,9 @@ export const UserLoginModal: React.FC<UserLoginModalProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="anushka@sprintsync.ai"
+                  name="sprintsync_no_autofill_modal_user"
+                  autoComplete="off"
+                  placeholder="e.g. user@domain.com or username"
                   value={identifier}
                   onChange={e => setIdentifier(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
@@ -94,6 +96,8 @@ export const UserLoginModal: React.FC<UserLoginModalProps> = ({
                 <input
                   type="password"
                   required
+                  name="sprintsync_no_autofill_modal_pass"
+                  autoComplete="new-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -123,7 +127,7 @@ export const UserLoginModal: React.FC<UserLoginModalProps> = ({
                 onClick={onOpenAdminPortal}
                 className="text-[10px] text-slate-600 hover:text-indigo-400 underline block mx-auto pt-1"
               >
-                Shiv Admin Access Portal
+                Admin Access Portal
               </button>
             )}
           </div>

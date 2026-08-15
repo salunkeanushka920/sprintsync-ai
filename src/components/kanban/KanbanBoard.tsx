@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { TaskCard } from './TaskCard';
 import { TaskDetailModal } from './TaskDetailModal';
+import { ManageSprintModal } from '../calendar/ManageSprintModal';
 import type { Task, TaskStatus, TaskPriority, TaskTag } from '../../types';
 import {
   Plus,
@@ -9,7 +10,9 @@ import {
   Search,
   Kanban as KanbanIcon,
   User as UserIcon,
-  Tag as TagIcon
+  Tag as TagIcon,
+  Calendar,
+  Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,6 +22,10 @@ export const KanbanBoard: React.FC = () => {
     users,
     currentUser,
     currentRole,
+    sprints,
+    activeSprintId,
+    setActiveSprintId,
+    sprint,
     addTask,
     updateTask,
     deleteTask,
@@ -34,6 +41,7 @@ export const KanbanBoard: React.FC = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
   const [selectedMember, setSelectedMember] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
+  const [isManageSprintOpen, setIsManageSprintOpen] = useState(false);
 
   // Quick Task Creation Modal State
   const [newTitle, setNewTitle] = useState('');
@@ -54,6 +62,9 @@ export const KanbanBoard: React.FC = () => {
     { id: 'blocked', label: 'Blocked 🔴', color: 'text-rose-400', bg: 'border-rose-500/40' },
     { id: 'completed', label: 'Completed ✓', color: 'text-emerald-400', bg: 'border-emerald-500/30' }
   ];
+
+  // Sprint member allocation filtering
+  const allocatedSprintMembers = users.filter(u => (sprint.memberIds || []).includes(u.id));
 
   // Filtering logic with User Data Isolation
   const userIsolatedTasks = currentRole === 'user'
@@ -113,21 +124,78 @@ export const KanbanBoard: React.FC = () => {
       {/* Board Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold text-xs border border-indigo-500/30 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" /> {sprint.name}
+            </span>
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-100 mt-1 flex items-center gap-2.5">
             <KanbanIcon className="w-6 h-6 text-indigo-400" />
             Sprint Task Board & Kanban Workflow
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Drag, prioritize, and manage high-velocity hackathon tasks in real-time.
+          <p className="text-xs text-slate-400 mt-0.5">
+            Drag, prioritize, and manage high-velocity tasks in real-time.
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCreateTaskOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 active:scale-95 transition-all"
-        >
-          <Plus className="w-4 h-4" /> Create New Task
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsManageSprintOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/40 text-xs font-bold text-slate-200 transition-all"
+          >
+            <Calendar className="w-4 h-4 text-indigo-400" />
+            <span>Manage Sprints ({sprints.length})</span>
+          </button>
+
+          <button
+            onClick={() => setIsCreateTaskOpen(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 active:scale-95 transition-all"
+          >
+            <Plus className="w-4 h-4" /> Create New Task
+          </button>
+        </div>
+      </div>
+
+      {/* Multi-Sprint Tabs & Team Member Allocation Bar */}
+      <div className="glass-panel p-3.5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        {/* Sprint Switcher Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          {sprints.map(s => (
+            <button
+              key={s.id}
+              onClick={() => setActiveSprintId(s.id)}
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                s.id === activeSprintId
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              <span>{s.name}</span>
+              <span className={`px-1.5 py-0.2 text-[9px] rounded-md ${
+                s.status === 'active' ? 'bg-emerald-400 text-slate-950 font-black' : 'bg-slate-800 text-slate-400'
+              }`}>
+                {s.status}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Sprint Allocated Members */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[11px] text-slate-400 font-semibold flex items-center gap-1">
+            <Users className="w-3.5 h-3.5 text-indigo-400" /> Sprint Team ({allocatedSprintMembers.length}):
+          </span>
+          <div className="flex items-center -space-x-1.5 overflow-hidden">
+            {allocatedSprintMembers.map(u => (
+              <img
+                key={u.id}
+                src={u.avatar}
+                title={`${u.name} (${u.department})`}
+                className="w-6 h-6 rounded-full border-2 border-slate-950 object-cover"
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -381,6 +449,12 @@ export const KanbanBoard: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Multi-Sprint & Team Allocation Hub Modal */}
+      <ManageSprintModal
+        isOpen={isManageSprintOpen}
+        onClose={() => setIsManageSprintOpen(false)}
+      />
 
     </div>
   );

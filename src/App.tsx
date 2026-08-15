@@ -11,6 +11,7 @@ import { StandupModule } from './components/standup/StandupModule';
 import { GitHubIntegration } from './components/github/GitHubIntegration';
 import { AnalyticsDashboard } from './components/analytics/AnalyticsDashboard';
 import { SprintTimeline } from './components/calendar/SprintTimeline';
+import { SprintWorkspacesView } from './components/calendar/SprintWorkspacesView';
 import { WhatsAppSimulator } from './components/notifications/WhatsAppSimulator';
 import { SettingsView } from './components/settings/SettingsView';
 import { ProfileSettings } from './components/user/ProfileSettings';
@@ -31,6 +32,7 @@ const MainLayout: React.FC = () => {
     activeTab,
     setActiveTab,
     currentRole,
+    currentUser,
     isWhatsAppModalOpen,
     setIsWhatsAppModalOpen,
     isLoginModalOpen,
@@ -40,6 +42,8 @@ const MainLayout: React.FC = () => {
     isAdminPortalOpen,
     setIsAdminPortalOpen
   } = useApp();
+
+  const isLight = currentUser?.themePreference === 'light';
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -61,6 +65,8 @@ const MainLayout: React.FC = () => {
         return <AnalyticsDashboard />;
       case 'timeline':
         return <SprintTimeline />;
+      case 'sprints':
+        return <SprintWorkspacesView />;
       case 'whatsapp':
         return <WhatsAppSimulator />;
       case 'settings':
@@ -71,7 +77,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1020] text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className={`min-h-screen ${isLight ? 'light-theme bg-slate-100 text-slate-900' : 'bg-[#0B1020] text-slate-100'} flex flex-col font-sans selection:bg-indigo-500 selection:text-white transition-colors duration-300`}>
       {/* Sticky Navbar */}
       <Navbar />
 

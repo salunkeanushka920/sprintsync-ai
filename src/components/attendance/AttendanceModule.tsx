@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Clock,
-  Calendar,
   CheckCircle2,
   LogOut,
   LogIn,
@@ -186,49 +185,6 @@ export const AttendanceModule: React.FC = () => {
           </div>
         </div>
 
-      </div>
-
-      {/* Attendance History Log Table */}
-      <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-        <h3 className="text-sm font-extrabold text-slate-100 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-indigo-400" /> Attendance History & Shift Logs
-        </h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead className="bg-slate-900 text-slate-400 font-bold border-b border-slate-800">
-              <tr>
-                <th className="p-3">Member</th>
-                <th className="p-3">Date</th>
-                <th className="p-3">Clock In</th>
-                <th className="p-3">Clock Out</th>
-                <th className="p-3">Total Hours</th>
-                <th className="p-3">Location</th>
-                <th className="p-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {attendanceRecords.map(rec => (
-                <tr key={rec.id} className="hover:bg-slate-900/40">
-                  <td className="p-3 flex items-center gap-2 font-bold text-slate-200">
-                    <img src={rec.userAvatar} className="w-6 h-6 rounded-md object-cover" />
-                    <span>{rec.userName}</span>
-                  </td>
-                  <td className="p-3 font-mono text-slate-300">{rec.date}</td>
-                  <td className="p-3 font-mono text-emerald-400 font-bold">{rec.clockInTime}</td>
-                  <td className="p-3 font-mono text-indigo-300">{rec.clockOutTime || 'In Progress'}</td>
-                  <td className="p-3 font-bold text-slate-300">{rec.totalHours ? `${rec.totalHours}h` : 'Shift Active'}</td>
-                  <td className="p-3 text-slate-400">{rec.location}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
-                      {rec.status.toUpperCase()}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
 
     </div>

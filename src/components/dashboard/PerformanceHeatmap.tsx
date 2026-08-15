@@ -18,7 +18,7 @@ export const PerformanceHeatmap: React.FC<PerformanceHeatmapProps> = ({ users, t
             Team Velocity & Productivity Heatmap
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Active task contributions per member for current hackathon sprint
+            Active task contributions per member for current project sprint
           </p>
         </div>
         <span className="text-[11px] px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">

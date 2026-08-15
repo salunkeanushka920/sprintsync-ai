@@ -83,7 +83,7 @@ export const AnalyticsDashboard: React.FC = () => {
           </div>
           <h1 className="text-2xl font-extrabold text-slate-100 mt-2 flex items-center gap-2.5">
             <BarChart3 className="w-6 h-6 text-indigo-400" />
-            Hackathon Velocity & Sprint Analytics
+            Project Velocity & Sprint Analytics
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
             Burndown trajectory, member output benchmarks, priority heat map, and department workload hours.

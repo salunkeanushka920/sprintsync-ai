@@ -23,6 +23,7 @@ export const AIAssistantModal: React.FC = () => {
     addStandup
   } = useApp();
 
+  const [geminiApiKey, setGeminiApiKey] = useState(localStorage.getItem('sprintsync_gemini_key') || '');
   const [activeTab, setActiveTab] = useState<'standup' | 'converter' | 'burnout' | 'prioritizer'>('standup');
   const [meetingNotesInput, setMeetingNotesInput] = useState('');
   const [parsedTasks, setParsedTasks] = useState<any[]>([]);
@@ -36,15 +37,67 @@ export const AIAssistantModal: React.FC = () => {
 
   if (!isAIAssistantOpen) return null;
 
-  // AI Meeting Notes Parser simulation
-  const handleConvertNotes = () => {
+  const saveGeminiKey = (key: string) => {
+    setGeminiApiKey(key);
+    localStorage.setItem('sprintsync_gemini_key', key);
+  };
+
+  // Live Gemini API Call
+  const callGeminiAPI = async (promptText: string) => {
+    if (!geminiApiKey.trim()) return null;
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey.trim()}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }]
+          })
+        }
+      );
+      if (!response.ok) throw new Error(`Gemini API HTTP Error ${response.status}`);
+      const data = await response.json();
+      return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    } catch (err) {
+      console.warn('Gemini API fetch error:', err);
+      return null;
+    }
+  };
+
+  // AI Meeting Notes Parser with Live Gemini AI Integration
+  const handleConvertNotes = async () => {
     if (!meetingNotesInput.trim()) return;
     setIsProcessingNotes(true);
+
+    if (geminiApiKey.trim()) {
+      const prompt = `Parse the following meeting transcript into JSON array of action item tasks. Format output strictly as JSON array: [{"title": "...", "description": "...", "priority": "high"|"medium"|"low", "tag": "UI"|"API"|"AI"|"Bug"|"Research", "estHours": 4}]. Meeting transcript: "${meetingNotesInput}"`;
+      const aiResult = await callGeminiAPI(prompt);
+      if (aiResult) {
+        try {
+          const jsonMatch = aiResult.match(/\[.*\]/s);
+          if (jsonMatch) {
+            const rawParsed = JSON.parse(jsonMatch[0]);
+            const mapped = rawParsed.map((item: any) => ({
+              ...item,
+              assignedToId: users[0].id
+            }));
+            setParsedTasks(mapped);
+            setIsProcessingNotes(false);
+            return;
+          }
+        } catch {
+          // Fallback if JSON parse fails
+        }
+      }
+    }
+
+    // Heuristic fallback if no API key
     setTimeout(() => {
       setParsedTasks([
         {
           title: 'Refactor Auth Route Controller',
-          description: 'Extracted from meeting transcript: Clean up JWT payload checks.',
+          description: `Extracted from notes: "${meetingNotesInput.substring(0, 40)}..."`,
           priority: 'high',
           assignedToId: users[1]?.id || users[0].id,
           tag: 'API',
@@ -60,7 +113,7 @@ export const AIAssistantModal: React.FC = () => {
         }
       ]);
       setIsProcessingNotes(false);
-    }, 1200);
+    }, 1000);
   };
 
   const handleSaveStandup = () => {
@@ -99,7 +152,7 @@ export const AIAssistantModal: React.FC = () => {
           className="w-full max-w-3xl glass-panel bg-slate-950/95 border border-purple-500/40 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="p-6 border-b border-slate-800 bg-gradient-to-r from-purple-950/60 via-slate-900 to-indigo-950/60 flex items-center justify-between">
+          <div className="p-6 border-b border-slate-800 bg-gradient-to-r from-purple-950/60 via-slate-900 to-indigo-950/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-purple-600/20 text-amber-300 border border-purple-500/30">
                 <Bot className="w-5 h-5 animate-pulse" />
@@ -113,12 +166,23 @@ export const AIAssistantModal: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsAIAssistantOpen(false)}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900"
-            >
-              <X className="w-5 h-5" />
-            </button>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="password"
+                placeholder="Paste Gemini API Key (Optional)..."
+                value={geminiApiKey}
+                onChange={e => saveGeminiKey(e.target.value)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 font-mono text-[11px] focus:border-purple-500 focus:outline-none w-full sm:w-56"
+                title="Paste free Google Gemini API key from aistudio.google.com for live AI responses"
+              />
+              <button
+                onClick={() => setIsAIAssistantOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Sub Navigation Bar */}

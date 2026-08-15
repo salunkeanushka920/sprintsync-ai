@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { ManageSprintModal } from '../calendar/ManageSprintModal';
 import {
   Sparkles,
   Search,
@@ -11,7 +12,9 @@ import {
   Settings,
   LogOut,
   LogIn,
-  UserPlus
+  UserPlus,
+  Calendar,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,6 +25,7 @@ export const Navbar: React.FC = () => {
     notifications,
     markNotificationRead,
     markAllNotificationsRead,
+    clearNotifications,
     setIsCommandPaletteOpen,
     setIsWhatsAppModalOpen,
     setIsAIAssistantOpen,
@@ -30,23 +34,21 @@ export const Navbar: React.FC = () => {
     setIsLoginModalOpen,
     setIsAdminPortalOpen,
     logoutUser,
-    whatsAppMessages,
     sprint,
-    tasks,
+    sprints,
+    activeSprintId,
+    setActiveSprintId,
     setActiveTab
   } = useApp();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isSprintMenuOpen, setIsSprintMenuOpen] = useState(false);
+  const [isManageSprintOpen, setIsManageSprintOpen] = useState(false);
 
   // User-specific notifications filtering
   const userNotifs = notifications.filter(n => n.userId === currentUser.id || n.type === 'announcement');
   const unreadNotifs = userNotifs.filter(n => !n.read);
-
-  // User-specific task progress
-  const myTasks = tasks.filter(t => t.assignedToIds.includes(currentUser.id));
-  const completedTasksCount = myTasks.filter(t => t.status === 'completed').length;
-  const sprintProgress = Math.round((completedTasksCount / (myTasks.length || 1)) * 100);
 
   return (
     <header className="sticky top-0 z-30 w-full glass-panel border-b border-slate-800/80 px-4 lg:px-6 py-3">
@@ -73,22 +75,73 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                Personal Hackathon Hub
+                Personal Project Hub
               </p>
             </div>
           </div>
 
-          {/* Active Sprint Badge */}
-          <div className="hidden xl:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-slate-300 font-medium">{sprint.name}</span>
-            <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden ml-1">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-500"
-                style={{ width: `${sprintProgress}%` }}
-              />
-            </div>
-            <span className="text-[11px] font-semibold text-emerald-400">{sprintProgress}%</span>
+          {/* Active Sprint Selector Dropdown */}
+          <div className="relative hidden xl:block">
+            <button
+              onClick={() => setIsSprintMenuOpen(!isSprintMenuOpen)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 text-xs transition-all cursor-pointer"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-slate-300 font-bold truncate max-w-[180px]">{sprint.name}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            <AnimatePresence>
+              {isSprintMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute left-0 mt-2 w-72 rounded-2xl glass-panel bg-slate-950/95 border border-slate-800 shadow-2xl p-3 z-50 space-y-1.5"
+                >
+                  <div className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Switch Sprint & Team Allocation
+                  </div>
+
+                  {sprints.map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        setActiveSprintId(s.id);
+                        setIsSprintMenuOpen(false);
+                      }}
+                      className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-all ${
+                        s.id === activeSprintId
+                          ? 'bg-indigo-600/30 text-white border border-indigo-500/40 font-bold'
+                          : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="truncate pr-2">
+                        <div className="truncate">{s.name}</div>
+                        <div className="text-[10px] text-slate-500 font-mono">{s.startDate} - {s.endDate}</div>
+                      </div>
+                      <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded uppercase ${
+                        s.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'
+                      }`}>
+                        {s.status}
+                      </span>
+                    </button>
+                  ))}
+
+                  <div className="pt-2 border-t border-slate-800">
+                    <button
+                      onClick={() => {
+                        setIsManageSprintOpen(true);
+                        setIsSprintMenuOpen(false);
+                      }}
+                      className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow"
+                    >
+                      <Calendar className="w-3.5 h-3.5" /> Manage All Sprints
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -133,15 +186,10 @@ export const Navbar: React.FC = () => {
           {/* WhatsApp Simulator Button */}
           <button
             onClick={() => setIsWhatsAppModalOpen(true)}
-            className="relative p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-400 transition-all hover:bg-emerald-950/20"
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-400 transition-all hover:bg-emerald-950/20"
             title="WhatsApp Notifications"
           >
             <MessageSquare className="w-5 h-5 text-emerald-400" />
-            {whatsAppMessages.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-bold text-[10px] flex items-center justify-center animate-bounce">
-                {whatsAppMessages.length}
-              </span>
-            )}
           </button>
 
           {/* Notifications Dropdown */}
@@ -174,14 +222,24 @@ export const Navbar: React.FC = () => {
                         {unreadNotifs.length} new
                       </span>
                     </div>
-                    {unreadNotifs.length > 0 && (
-                      <button
-                        onClick={markAllNotificationsRead}
-                        className="text-xs text-indigo-400 hover:underline flex items-center gap-1"
-                      >
-                        <CheckCheck className="w-3.5 h-3.5" /> Mark all read
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {unreadNotifs.length > 0 && (
+                        <button
+                          onClick={markAllNotificationsRead}
+                          className="text-xs text-indigo-400 hover:underline flex items-center gap-1"
+                        >
+                          <CheckCheck className="w-3.5 h-3.5" /> Mark read
+                        </button>
+                      )}
+                      {userNotifs.length > 0 && (
+                        <button
+                          onClick={clearNotifications}
+                          className="text-xs text-rose-400 hover:underline flex items-center gap-1 font-semibold"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Clear all
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="max-h-80 overflow-y-auto space-y-2.5 py-3">
@@ -242,8 +300,12 @@ export const Navbar: React.FC = () => {
                   <div className="px-3 py-2 border-b border-slate-800 mb-2">
                     <p className="text-xs font-bold text-slate-200">{currentUser.name}</p>
                     <p className="text-[11px] text-slate-400 truncate">@{currentUser.username}</p>
-                    <span className="px-2 py-0.5 text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 rounded-md mt-1 inline-block">
-                      {currentRole === 'admin' ? 'Shiv Admin Portal' : 'Personal Workspace'}
+                    <span className={`px-2 py-0.5 text-[10px] font-extrabold rounded-md mt-1 inline-block uppercase tracking-wider ${
+                      currentRole === 'admin'
+                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                        : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                    }`}>
+                      {currentRole === 'admin' ? '🛡️ Admin / Lead' : '👤 Team Member'}
                     </span>
                   </div>
 
@@ -266,7 +328,7 @@ export const Navbar: React.FC = () => {
                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-900 hover:text-white transition-all"
                   >
                     <UserPlus className="w-4 h-4 text-emerald-400" />
-                    <span>Create New Workspace</span>
+                    <span>Register New User Account</span>
                   </button>
 
                   <button
@@ -309,6 +371,12 @@ export const Navbar: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Manage Sprints & Team Allocation Modal */}
+      <ManageSprintModal
+        isOpen={isManageSprintOpen}
+        onClose={() => setIsManageSprintOpen(false)}
+      />
     </header>
   );
 };

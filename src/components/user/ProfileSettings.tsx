@@ -8,18 +8,10 @@ import {
   CheckCircle2,
   Moon,
   Sun,
-  Sparkles
+  Sparkles,
+  Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const AVATAR_PRESETS = [
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80'
-];
 
 export const ProfileSettings: React.FC = () => {
   const { currentUser, updateUser } = useApp();
@@ -36,6 +28,19 @@ export const ProfileSettings: React.FC = () => {
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleDeviceFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setAvatar(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +89,7 @@ export const ProfileSettings: React.FC = () => {
             Profile Settings & Identity
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Customize your avatar, bio, technical skills, GitHub link, and workspace theme.
+            Customize your profile photo, bio, technical skills, GitHub link, and workspace theme.
           </p>
         </div>
 
@@ -109,38 +114,45 @@ export const ProfileSettings: React.FC = () => {
       {/* Main Form */}
       <form onSubmit={handleSave} className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
         
-        {/* Profile Photo Selector */}
+        {/* Device Photo Upload Selector */}
         <div className="space-y-3">
           <label className="text-xs font-bold text-slate-300 block">Profile Photo</label>
-          <div className="flex flex-wrap items-center gap-4">
-            <img
-              src={avatar}
-              alt="Profile"
-              className="w-20 h-20 rounded-3xl object-cover ring-4 ring-purple-500/50 shadow-xl"
-            />
-            <div>
-              <p className="text-xs text-slate-400 mb-2">Choose an avatar preset or enter custom URL:</p>
-              <div className="flex items-center gap-2.5 overflow-x-auto pb-1">
-                {AVATAR_PRESETS.map((preset, idx) => (
-                  <img
-                    key={idx}
-                    src={preset}
-                    onClick={() => setAvatar(preset)}
-                    className={`w-10 h-10 rounded-2xl object-cover cursor-pointer transition-all ${
-                      avatar === preset ? 'ring-2 ring-indigo-500 scale-105' : 'opacity-60 hover:opacity-100'
-                    }`}
-                  />
-                ))}
-              </div>
+          <div className="flex items-center gap-4">
+            <div className="relative group shrink-0">
+              <img
+                src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e293b&color=cbd5e1&size=150`}
+                alt="Profile"
+                className="w-20 h-20 rounded-3xl object-cover ring-4 ring-purple-500/50 shadow-xl"
+              />
+              <label
+                title="Add Profile Image"
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center cursor-pointer shadow-lg transition-all ring-2 ring-slate-950"
+              >
+                <Plus className="w-4 h-4" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleDeviceFileUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <div className="space-y-2">
+              <label className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs cursor-pointer inline-flex items-center gap-2 transition-all shadow-md shadow-purple-600/30">
+                <Plus className="w-4 h-4 text-amber-300" /> Add Profile Image from Device
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleDeviceFileUpload}
+                  className="hidden"
+                />
+              </label>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Select any photo from your computer or phone to set as your avatar profile picture.
+              </p>
             </div>
           </div>
-          <input
-            type="text"
-            placeholder="Custom Avatar Image URL..."
-            value={avatar}
-            onChange={e => setAvatar(e.target.value)}
-            className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-100"
-          />
         </div>
 
         {/* Name & Display Name */}
@@ -246,11 +258,11 @@ export const ProfileSettings: React.FC = () => {
               onClick={() => setThemePreference('light')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
                 themePreference === 'light'
-                  ? 'bg-purple-600 text-white border-purple-500'
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/30'
                   : 'bg-slate-900 text-slate-400 border-slate-800'
               }`}
             >
-              <Sun className="w-4 h-4" /> Soft Glass Mode
+              <Sun className="w-4 h-4" /> Light Mode
             </button>
           </div>
         </div>

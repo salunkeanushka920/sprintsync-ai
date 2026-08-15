@@ -30,7 +30,7 @@ export const SprintTimeline: React.FC = () => {
           </div>
           <h1 className="text-2xl font-extrabold text-slate-100 mt-2 flex items-center gap-2.5">
             <Calendar className="w-6 h-6 text-purple-400" />
-            Hackathon Sprint Timeline & Gantt Schedule
+            Project Sprint Timeline & Gantt Schedule
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
             {sprint.name} — Goal: {sprint.goal}

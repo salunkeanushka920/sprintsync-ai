@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import type { UserRole } from '../../types';
 import {
   Sparkles,
   User,
@@ -11,15 +12,6 @@ import {
   Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80'
-];
 
 const SKILL_OPTIONS = [
   'React',
@@ -52,14 +44,29 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('user');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const [selectedAvatar, setSelectedAvatar] = useState(PRESET_AVATARS[0]);
+  const [selectedAvatar, setSelectedAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150');
   const [bio, setBio] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<string[]>(['React', 'TypeScript', 'TailwindCSS']);
+
+  const handleDeviceAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setSelectedAvatar(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -96,11 +103,12 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
       username,
       email,
       passwordHash: password,
-      role: 'user',
-      department: 'Frontend',
+      role: selectedRole,
+      department: selectedRole === 'admin' ? 'Backend' : 'Frontend',
       avatar: selectedAvatar,
-      bio: bio || 'Frontend Engineer crafting fast responsive hackathon applications.',
-      skills: selectedSkills.length > 0 ? selectedSkills : ['React', 'TypeScript']
+      bio: bio || (selectedRole === 'admin' ? 'Project Admin & System Lead' : 'Team Member crafting fast sprint features.'),
+      skills: selectedSkills.length > 0 ? selectedSkills : ['React', 'TypeScript'],
+      phoneNumber: phoneNumber.trim() || '+91 9876543210'
     });
 
     onClose();
@@ -113,7 +121,7 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-lg glass-panel bg-slate-950/95 border border-indigo-500/40 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6"
+          className="w-full max-w-lg glass-panel bg-slate-950/95 border border-indigo-500/40 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto"
         >
           {/* Top Bar */}
           <div className="flex items-center justify-between">
@@ -160,8 +168,40 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
             {step === 1 && (
               <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-100">Step 1: Basic Information</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Set up your identity for your personal workspace</p>
+                  <h3 className="text-base font-extrabold text-slate-100">Step 1: Basic Information & Role</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Select your workspace role and enter account details</p>
+                </div>
+
+                {/* Role Selector */}
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1.5">Choose Account Role</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('user')}
+                      className={`p-3 rounded-2xl border text-left transition-all ${
+                        selectedRole === 'user'
+                          ? 'bg-indigo-950/60 border-indigo-500 text-white ring-2 ring-indigo-500/30'
+                          : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="font-extrabold text-xs text-indigo-400">Team Member</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Access task board, clock in/out, submit standups</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('admin')}
+                      className={`p-3 rounded-2xl border text-left transition-all ${
+                        selectedRole === 'admin'
+                          ? 'bg-purple-950/60 border-purple-500 text-white ring-2 ring-purple-500/30'
+                          : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="font-extrabold text-xs text-purple-400">Admin / Lead</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Manage sprint tasks, velocity analytics, announcements</div>
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -204,6 +244,18 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
                     onChange={e => setUsername(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:border-indigo-500"
                   />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">WhatsApp Number</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +91 9876543210"
+                    value={phoneNumber}
+                    onChange={e => setPhoneNumber(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">Saved to your profile for automated WhatsApp alerts & task reminders</p>
                 </div>
               </motion.div>
             )}
@@ -260,22 +312,45 @@ export const MultiStepRegisterModal: React.FC<MultiStepRegisterModalProps> = ({
                   <p className="text-xs text-slate-400 mt-0.5">Choose your avatar, bio, and technical skills</p>
                 </div>
 
-                {/* Avatar Picker */}
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-2">Select Profile Avatar</label>
-                  <div className="flex items-center gap-3 overflow-x-auto pb-1">
-                    {PRESET_AVATARS.map((av, idx) => (
-                      <img
-                        key={idx}
-                        src={av}
-                        onClick={() => setSelectedAvatar(av)}
-                        className={`w-11 h-11 rounded-2xl object-cover cursor-pointer transition-all ${
-                          selectedAvatar === av
-                            ? 'ring-4 ring-indigo-500 scale-105 shadow-lg shadow-indigo-500/30'
-                            : 'opacity-60 hover:opacity-100'
-                        }`}
-                      />
-                    ))}
+                {/* Avatar Picker: Device Upload or Blank Silhouette */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-300 block">Profile Photo (Upload from Device or Silhouette)</label>
+                  
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={selectedAvatar}
+                      className="w-14 h-14 rounded-2xl object-cover border-2 border-indigo-500 shadow-md shadow-indigo-500/20 shrink-0"
+                    />
+
+                    <div className="flex flex-col gap-1.5 flex-1">
+                      <label className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer text-center transition-all shadow-md">
+                        📁 Upload Photo from Device
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleDeviceAvatarUpload}
+                          className="hidden"
+                        />
+                      </label>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAvatar(`https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || 'User')}&background=1e293b&color=cbd5e1&size=150`)}
+                          className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-bold text-[11px]"
+                        >
+                          👤 Blank Initials Profile
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAvatar('https://lh3.googleusercontent.com/a/default-user=s96-c')}
+                          className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-bold text-[11px]"
+                        >
+                          🌐 Google Silhouette
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import type { UserRole, TeamDepartment } from '../../types';
+import type { UserRole } from '../../types';
 import {
   Users,
   Plus,
@@ -16,7 +16,8 @@ export const TeamMembersView: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('user');
-  const [department, setDepartment] = useState<TeamDepartment>('Frontend');
+  const [department, setDepartment] = useState<string>('Frontend');
+  const [customDepartment, setCustomDepartment] = useState('');
   const [skills] = useState('React, TypeScript, Tailwind');
   const [githubUsername, setGithubUsername] = useState('dev-user');
   const [phoneNumber, setPhoneNumber] = useState('+14155559988');
@@ -25,14 +26,16 @@ export const TeamMembersView: React.FC = () => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
 
+    const finalDepartment = (department === 'Other' ? customDepartment.trim() : department) || 'Custom Role';
+
     addUser({
       name,
       username: name.toLowerCase().replace(/\s+/g, '_'),
       email,
       role,
-      department,
+      department: finalDepartment as any,
       avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
-      bio: `${department} team contributor`,
+      bio: `${finalDepartment} team contributor`,
       skills: skills.split(',').map(s => s.trim()),
       githubUsername,
       phoneNumber
@@ -40,6 +43,7 @@ export const TeamMembersView: React.FC = () => {
 
     setName('');
     setEmail('');
+    setCustomDepartment('');
     setIsAddUserOpen(false);
   };
 
@@ -56,7 +60,7 @@ export const TeamMembersView: React.FC = () => {
           </div>
           <h1 className="text-2xl font-extrabold text-slate-100 mt-2 flex items-center gap-2.5">
             <Users className="w-6 h-6 text-indigo-400" />
-            Hackathon Team Members & Role Management
+            Project Team Members & Role Management
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
             Assign team roles (Frontend, Backend, AI/ML, Design, Documentation, Testing), manage GitHub profiles & WhatsApp alert contact numbers.
@@ -213,9 +217,24 @@ export const TeamMembersView: React.FC = () => {
                       <option value="Design">Design</option>
                       <option value="Documentation">Documentation</option>
                       <option value="Testing">Testing</option>
+                      <option value="Other">Other (Specify Custom Role)</option>
                     </select>
                   </div>
                 </div>
+
+                {department === 'Other' && (
+                  <div>
+                    <label className="font-bold text-slate-300 block mb-1">Specify Custom Role / Department</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. UI/UX Designer, DevOps Engineer, QA Lead"
+                      value={customDepartment}
+                      onChange={e => setCustomDepartment(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-indigo-500/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-semibold"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="font-bold text-slate-300">GitHub Username</label>
