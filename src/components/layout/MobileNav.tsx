@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Kanban, Users, Activity, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Kanban, Users, Activity, MessageSquare, Clock } from 'lucide-react';
 
 interface MobileNavProps {
   activeTab: string;
@@ -10,6 +10,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeTab, setActiveTab })
   const navItems = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'kanban', label: 'Kanban', icon: Kanban },
+    { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'standup', label: 'Standups', icon: Activity },
     { id: 'members', label: 'Team', icon: Users },
     { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare }
