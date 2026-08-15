@@ -16,6 +16,7 @@ import type {
 } from '../types';
 import {
   INITIAL_USERS,
+  DEFAULT_FALLBACK_USER,
   INITIAL_COMMITS,
   INITIAL_PRS
 } from '../data/initialData';
@@ -127,14 +128,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [users, setUsers] = useState<User[]>(() => {
     const loaded = dbService.getUsers();
     const list = Array.isArray(loaded) ? loaded : [];
-    return list.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555'));
+    const filtered = list.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555'));
+    return filtered.length > 0 ? filtered : INITIAL_USERS;
   });
-  const [activeUserId, setActiveUserId] = useState<string>(() => dbService.getActiveUserId() || INITIAL_USERS[0].id);
+  const [activeUserId, setActiveUserId] = useState<string>(() => dbService.getActiveUserId() || 'usr_default');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dbService.getIsAuthenticated());
 
-  const currentUser = users.find(u => u.id === activeUserId) || users[0] || INITIAL_USERS[0];
-  const [currentRole, setCurrentRole] = useState<UserRole>(currentUser.role || 'user');
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(currentUser.role === 'admin');
+  const currentUser = (users && users.length > 0)
+    ? (users.find(u => u.id === activeUserId) || users[0])
+    : DEFAULT_FALLBACK_USER;
+  const [currentRole, setCurrentRole] = useState<UserRole>(currentUser?.role || 'user');
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(currentUser?.role === 'admin');
 
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);

@@ -1,6 +1,19 @@
 import type { User, Task, Notification, Standup, GitHubCommit, GitHubPR, WhatsAppMessage, Sprint, TeamAnnouncement, AttendanceRecord } from '../types';
 
-export const INITIAL_USERS: User[] = [];
+export const DEFAULT_FALLBACK_USER: User = {
+  id: 'usr_default',
+  name: 'Workspace User',
+  username: 'workspace_user',
+  email: 'user@sprintsync.ai',
+  role: 'user',
+  department: 'Frontend',
+  avatar: 'https://ui-avatars.com/api/?name=Workspace+User&background=1e293b&color=cbd5e1&size=150',
+  bio: 'SprintSync Project Workspace Member',
+  skills: ['React', 'TypeScript', 'TailwindCSS'],
+  phoneNumber: '+91 9876543210'
+};
+
+export const INITIAL_USERS: User[] = [DEFAULT_FALLBACK_USER];
 
 export const INITIAL_SPRINTS: Sprint[] = [];
 

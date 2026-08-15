@@ -1,7 +1,7 @@
 import type {
   User,
   Task,
-  Notification,
+  Notification as AppNotification,
   Standup,
   WhatsAppMessage,
   Sprint,
@@ -100,7 +100,7 @@ export const dbService = {
   },
 
   // Notifications
-  getNotifications: (): Notification[] => {
+  getNotifications: (): AppNotification[] => {
     try {
       const data = localStorage.getItem(DB_KEYS.NOTIFICATIONS);
       return data ? JSON.parse(data) : INITIAL_NOTIFICATIONS;
@@ -108,7 +108,7 @@ export const dbService = {
       return INITIAL_NOTIFICATIONS;
     }
   },
-  saveNotifications: (notifications: Notification[]) => {
+  saveNotifications: (notifications: AppNotification[]) => {
     localStorage.setItem(DB_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
   },
 
