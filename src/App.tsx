@@ -87,7 +87,7 @@ const MainLayout: React.FC = () => {
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Content Area */}
-        <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 pb-28 lg:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${activeTab}-${currentRole}`}

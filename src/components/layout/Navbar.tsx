@@ -146,14 +146,14 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Bar Trigger - Responsive on Mobile & Desktop */}
-        <div className="flex-1 max-w-md mx-2">
+        {/* Search Bar Trigger - Desktop input / Mobile icon */}
+        <div className="hidden md:flex flex-1 max-w-md mx-2">
           <button
             onClick={() => setIsCommandPaletteOpen(true)}
-            className="w-full flex items-center justify-between px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-indigo-500/40 text-slate-400 text-xs sm:text-sm transition-all shadow-inner group"
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-indigo-500/40 text-slate-400 text-sm transition-all shadow-inner group"
           >
-            <div className="flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+            <div className="flex items-center gap-2.5">
+              <Search className="w-4 h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
               <span className="truncate">Search tasks, AI or commands...</span>
             </div>
             <kbd className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700 rounded-md">
@@ -162,32 +162,42 @@ export const Navbar: React.FC = () => {
           </button>
         </div>
 
-        {/* Right Action Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Action Controls - Compact on Mobile */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           
+          {/* Mobile Search Trigger Icon */}
+          <button
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-indigo-400 hover:bg-indigo-950/30 transition-all active:scale-95"
+            title="Search Tasks & Commands"
+          >
+            <Search className="w-4.5 h-4.5" />
+          </button>
+
           {/* Quick Create Task */}
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/25 active:scale-95"
+            className="p-2 sm:px-3 sm:py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/25 active:scale-95 flex items-center gap-1.5"
+            title="Create New Task"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">New Task</span>
           </button>
 
-          {/* AI Assistant Floating Trigger */}
+          {/* AI Assistant Trigger - Desktop / Tablet */}
           <button
             onClick={() => setIsAIAssistantOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white transition-all shadow-lg shadow-purple-600/20 active:scale-95"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white transition-all shadow-lg shadow-purple-600/20 active:scale-95"
             title="Ask AI Productivity Assistant"
           >
             <Sparkles className="w-4 h-4 text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
             <span className="hidden lg:inline">AI Copilot</span>
           </button>
 
-          {/* WhatsApp Simulator Button */}
+          {/* WhatsApp Simulator Button - Desktop / Tablet */}
           <button
             onClick={() => setIsWhatsAppModalOpen(true)}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-400 transition-all hover:bg-emerald-950/20"
+            className="hidden sm:flex p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-400 transition-all hover:bg-emerald-950/20"
             title="WhatsApp Notifications"
           >
             <MessageSquare className="w-5 h-5 text-emerald-400" />
