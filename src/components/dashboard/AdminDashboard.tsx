@@ -104,7 +104,7 @@ export const AdminDashboard: React.FC = () => {
     });
 
     // Notify all team members via WhatsApp simulator
-    users.forEach(u => {
+    users.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555')).forEach(u => {
       sendWhatsAppNotification(
         u.phoneNumber || '+14155550100',
         u.name,

@@ -232,7 +232,7 @@ export const WhatsAppSimulator: React.FC = () => {
                   onChange={e => setSelectedUser(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 >
-                  {users.map(u => (
+                  {users.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555')).map(u => (
                     <option key={u.id} value={u.id}>
                       {u.name} ({u.phoneNumber || 'No phone set'})
                     </option>

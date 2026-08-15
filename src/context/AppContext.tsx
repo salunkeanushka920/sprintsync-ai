@@ -126,7 +126,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>(() => {
     const loaded = dbService.getUsers();
-    return loaded && loaded.length > 0 ? loaded : INITIAL_USERS;
+    const list = Array.isArray(loaded) ? loaded : [];
+    return list.filter(u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555'));
   });
   const [activeUserId, setActiveUserId] = useState<string>(() => dbService.getActiveUserId() || INITIAL_USERS[0].id);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => dbService.getIsAuthenticated());
@@ -253,7 +254,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     client.from('users').select('*').then(({ data, error }) => {
       if (data && data.length > 0 && !error) {
-        setUsers(data as User[]);
+        const cleanUsers = (data as User[]).filter(
+          u => u.id !== 'usr_shiv' && u.id !== 'usr_anushka' && !u.phoneNumber?.startsWith('+1415555')
+        );
+        setUsers(cleanUsers);
       }
     });
 
