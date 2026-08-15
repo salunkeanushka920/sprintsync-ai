@@ -8,8 +8,16 @@ export const SettingsView: React.FC = () => {
 
   const [userPhone, setUserPhone] = useState(currentUser?.phoneNumber || '');
   const [userBio, setUserBio] = useState(currentUser?.bio || '');
-  const [supaUrl, setSupaUrl] = useState(localStorage.getItem('sprintsync_supabase_url') || '');
-  const [supaKey, setSupaKey] = useState(localStorage.getItem('sprintsync_supabase_anon_key') || '');
+  const [supaUrl, setSupaUrl] = useState(
+    localStorage.getItem('sprintsync_supabase_url') ||
+    import.meta.env.VITE_SUPABASE_URL ||
+    'https://newjampgimgidqkbwjti.supabase.co'
+  );
+  const [supaKey, setSupaKey] = useState(
+    localStorage.getItem('sprintsync_supabase_anon_key') ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ld2phbXBnaW1naWRxa2J3anRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3ODI0MzUsImV4cCI6MjEwMjM1ODQzNX0.xlhcS6tMmb9RZ9Sp_dWdz4o4YhRzuwnE7dRGMY9w1no'
+  );
   const [copiedSql, setCopiedSql] = useState(false);
   const [profileSavedMsg, setProfileSavedMsg] = useState(false);
 
